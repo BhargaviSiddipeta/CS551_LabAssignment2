@@ -1,0 +1,168 @@
+
+
+
+var urlmain;
+var headers = {
+    "Content-type"     : "application/json",
+    "app_id"          : "29f93524",
+    "app_key"         : "3d5b94a156bf9acf864ae9c2f4088189"
+};
+var fsClient = filestack.init('AgD7zz7xZTGyrQNojCbzqz');
+function openPicker() {
+    fsClient.pick({
+        fromSources:["local_file_system","imagesearch","facebook","instagram","dropbox"]
+    }).then(function(response) {
+        // declare this function to handle response
+        console.log(JSON.stringify(response.filesUploaded))
+        //handleFilestack(response);
+        urlmain = response.filesUploaded[0].url;
+        var payload  = { "image" : urlmain };
+        var url = "http://api.kairos.com/detect";
+
+        // make request
+        $.ajax(url, {
+            headers  : headers,
+            type: "POST",
+            data: JSON.stringify(payload),
+            dataType: "text"
+        }).done(function(response){
+            console.log(response);
+        });
+
+
+    });
+}
+
+
+
+// (function () {
+//
+//     var headers = {
+//         "Content-type"     : "application/json",
+//         "app_id"          : "29f93524",
+//         "app_key"         : "3d5b94a156bf9acf864ae9c2f4088189"
+//     };
+//
+//
+//     var takePicture = document.querySelector("#take-picture"),
+//         showPicture = document.querySelector("#show-picture");
+//
+//     if (takePicture && showPicture) {
+//         // Set events
+//         takePicture.onchange = function (event) {
+//             // Get a reference to the taken picture or chosen file
+//             var files = event.target.files,
+//                 file;
+//             if (files && files.length > 0) {
+//                 file = files[0];
+//                 try {
+//                     // Create ObjectURL
+//                     var imgURL = window.URL.createObjectURL(file);
+//
+//                     // Set img src to ObjectURL
+//                     showPicture.src = imgURL;
+//
+//
+//
+//                     var fsClient = filestack.init('AgD7zz7xZTGyrQNojCbzqz');
+//                     function openPicker() {
+//                         fsClient.pick({
+//                             fromSources:["local_file_system","imagesearch","facebook","instagram","dropbox"]
+//                         }).then(function(response) {
+//                             // declare this function to handle response
+//                             handleFilestack(response);
+//                         });
+//                     }
+//
+//                     showPicture.onload = function() {
+//
+//                     URL.revokeObjectURL(imgURL);
+//                     };
+//                 }
+//                 catch (e) {
+//                     try {
+//                         // Fallback if createObjectURL is not supported
+//                         var fileReader = new FileReader();
+//                         fileReader.onload = function (event) {
+//                             showPicture.src = event.target.result;
+//                         };
+//                         fileReader.readAsDataURL(file);
+//                     }
+//                     catch (e) {
+//                         //
+//                         var error = document.querySelector("#error");
+//                         if (error) {
+//                             error.innerHTML = "Neither createObjectURL or FileReader are supported";
+//                         }
+//                     }
+//                 }
+//             }
+//         };
+//     }
+//
+//
+//
+//
+//
+
+
+
+    angular.module('weather', [])
+        .controller('weatherctrl', function($scope, $http) {
+
+            $scope.getWeather = function () {
+                fsClient.pick({
+                    fromSources:["local_file_system","imagesearch","facebook","instagram","dropbox"]
+                }).then(function(response) {
+                    // declare this function to handle response
+                    console.log(JSON.stringify(response.filesUploaded))
+                    //handleFilestack(response);
+                    urlmain = response.filesUploaded[0].url;
+
+                    // Detection
+                    var payload  = { "image" : urlmain };
+                    var url = "http://api.kairos.com/detect";
+                    // make request
+                    $.ajax(url, {
+                        headers  : headers,
+                        type: "POST",
+                        data: JSON.stringify(payload),
+                        dataType: "text"
+                    }).done(function(result){
+                        result1 = JSON.parse(result);
+                      console.log(result);
+                      //  console.log(JSON.stringify(result))
+                        age = result1.images[0].faces[0].attributes.age;
+                        glasses = result1.images[0].faces[0].attributes.glasses;
+                        gender = result1.images[0].faces[0].attributes.gender.type;
+                        lips = result1.images[0].faces[0].attributes.lips;
+                        eyedistance = result1.images[0].faces[0].eyeDistance;
+                        chintipx = result1.images[0].faces[0].chinTipX;
+                        chintipy = result1.images[0].faces[0].chinTipY;
+                        confidence = result1.images[0].faces[0].confidence;
+                        lefteyecentre = result1.images[0].faces[0].leftEyeCenterX;
+
+analysis = "Results : <br> Age = " + age +  "<br> Gender : " + gender +""
++ "<br>Wears Glasses = " + glasses + "<br>Lips = " + lips + "<br>Eye Distance =" + eyedistance + "<br>Chin Distance = " + chintipx + "<br>Confidence =" + confidence + "" ;
+
+                        image = document.getElementById('imgDisp');
+                        image.src = urlmain;
+                        document.getElementById("analysis").innerHTML = analysis;
+                   html: "<img src='" + urlmain + "'/>"
+
+
+                    });
+
+
+
+
+                });
+            }
+
+
+
+
+
+});
+
+
